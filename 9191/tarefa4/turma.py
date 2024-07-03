@@ -4,7 +4,7 @@
 import sys
 from statistics import mean
 from typing import List, Dict, Tuple, Iterator
-from operator import attrgetter, itemgetter
+from operator import itemgetter
 
 from dataclasses import dataclass
 
@@ -48,6 +48,7 @@ class Turma:
             (disciplina, *max(self.notas_de_com_id(disciplina), key=itemgetter(1)))
             for disciplina in self.disciplinas
         ]
+
     def pior_nota_por_disciplina(self) -> List[Tuple[str, int, int]]:
         return [
             (disciplina, *min(self.notas_de_com_id(disciplina), key=itemgetter(1)))
@@ -75,25 +76,30 @@ def ler_alunos(n: int, disciplinas: List[str]) -> Turma:
     alunos = [ler_aluno(i, disciplinas) for i in range(1, n + 1)]
     return Turma(alunos=alunos, disciplinas=disciplinas)
 
+
 def imprime_medias_por_disciplina(turma: Turma) -> None:
     print("Resultados: ")
     for disciplina, media in turma.medias_por_disciplina():
         print(f"Média das notas em {disciplina}: {media:.2f}")
+
 
 def imprime_medias_por_aluno(turma: Turma) -> None:
     print("Média das notas por aluno: ")
     for id, media in turma.medias_dos_alunos():
         print(f"- Aluno {id}: {media:.2f}")
 
+
 def imprime_melhor_notas_por_disciplina(turma: Turma) -> None:
     print("Melhor nota por disciplina: ")
     for disciplina, id, nota in turma.melhor_nota_por_disciplina():
         print(f"- {disciplina}: Aluno {id} ({nota})")
 
+
 def imprime_pior_notas_por_disciplina(turma: Turma) -> None:
     print("Pior nota por disciplina: ")
     for disciplina, id, nota in turma.pior_nota_por_disciplina():
         print(f"- {disciplina}: Aluno {id} ({nota})")
+
 
 def main():
     n = 0

@@ -89,14 +89,15 @@ class GrupoDesportivo:
         """Adiciona um desportista ao grupo"""
         if nome in map(attrgetter("nome"), self.desportistas):
             raise UserWarning("Desportista já existe?")
-        desportista_id = max(map(attrgetter("id"), self.desportistas)) + 1
+        desportista_id = max(map(attrgetter("id"), self.desportistas),
+                             default=0) + 1
         desportista = Desportista(desportista_id, nome)
         self.desportistas.append(desportista)
         return desportista
 
     def adicionar_avaliacao(self, desportista_id, valor):
         """Adiciona uma avaliação ao grupo"""
-        avaliacao_id = max(map(attrgetter("id"), self.avaliacoes)) + 1
+        avaliacao_id = max(map(attrgetter("id"), self.avaliacoes), default=0) + 1
         avaliacao = Avaliacao(avaliacao_id, desportista_id, valor)
         self.avaliacoes.append(avaliacao)
         return avaliacao
@@ -104,16 +105,17 @@ class GrupoDesportivo:
     def desportista_chamado(self, nome):
         """Retorna um desportista de um dado nome, assumindo que seja como um id único"""
         return next(
-            desportista for desportista in self.desportistas if desportista.nome == nome
+            (desportista for desportista in self.desportistas if
+            desportista.nome == nome), None
         )
 
     def avaliacoes_de_desportista(self, desportista: Desportista):
-        """Retorna um iterador para avaliações de um desportista"""
-        return (
+        """Retorna uma lista de avaliações de um desportista"""
+        return [
             avaliacao
             for avaliacao in self.avaliacoes
             if avaliacao.desportista_id == desportista.id
-        )
+        ]
 
     def salvar(
         self,
@@ -129,10 +131,12 @@ def visualizar_desportista(grupo: GrupoDesportivo, desportista: Desportista):
     """Visualiza um único desportista de um grupo"""
     print(f"Nome: {desportista.nome}")
     print(f"Id: {desportista.id}")
-    print("Avaliacões:")
-    for avaliacao in grupo.avaliacoes_de_desportista(desportista):
-        print(f" - id: {avaliacao.id}")
-        print(f" - valor: {avaliacao.valor: g}")
+    avaliacoes = grupo.avaliacoes_de_desportista(desportista)
+    if len(avaliacoes) > 0:
+        print("Avaliacões:")
+        for avaliacao in avaliacoes:
+            print(f" - id: {avaliacao.id}")
+            print(f" - valor: {avaliacao.valor: g}")
 
 
 def visualizar_desportistas(grupo: GrupoDesportivo):
